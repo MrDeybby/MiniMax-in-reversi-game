@@ -19,7 +19,7 @@ POSITION_WEIGHTS = [
 
 
 def opponent(color: str) -> str:
-    """Devuelve el color opuesto."""
+    """Returns the opposite color."""
     return "R" if color == "B" else "B"
 
 
@@ -101,7 +101,9 @@ class ReversiBoard(Board):
         return False
 
     def childrens(self, player_color):
-
+        """
+        Generates child board states for all valid moves (used by AI)
+        """
         options_available = self.posible_movements(player_color)
         children = []
 
@@ -158,6 +160,9 @@ class ReversiBoard(Board):
         return list(set(movements))
 
     def insert_play(self, x, y, token: Token):
+        """
+        Validates move, places token, flips opponent tokens, decrements token count
+        """
         if (x, y) not in self.posible_movements(token.color):
             raise ValueError(f"Invalid move at ({x}, {y}) for color {token.color}.")
         self._state[y][x] = token
@@ -273,37 +278,36 @@ class ReversiBoard(Board):
         h_vals = {name: self.HEURISTICS[name](color) for name in enabled}
 
         if custom_weights is not None:
-            
-            #APERTURA, MEDIO, FINAL
-            if 'apertura' in custom_weights and 'medio' in custom_weights and 'final' in custom_weights:
-                e = self._empty_count()
-                
-                if e >= 40: # Apertura
-                    W = custom_weights['apertura']
-                elif e >= 15: # Medio
-                    W = custom_weights['medio']
-                else:  # Final
-                    W = custom_weights['final']
-                
 
+            # APERTURA, MEDIO, FINAL
+            if (
+                "apertura" in custom_weights
+                and "medio" in custom_weights
+                and "final" in custom_weights
+            ):
+                e = self._empty_count()
+
+                if e >= 40:  # Apertura
+                    W = custom_weights["apertura"]
+                elif e >= 15:  # Medio
+                    W = custom_weights["medio"]
+                else:  # Final
+                    W = custom_weights["final"]
 
                 W = {k: v for k, v in W.items() if k in enabled}
                 W = self._normalize(W)
 
-
-
             elif any(k in enabled for k in custom_weights):
                 W = {k: v for k, v in custom_weights.items() if k in enabled}
                 W = self._normalize(W)
-            
+
             else:
                 e = self._empty_count()
                 W = self._phase_weights(e, enabled)
-        
+
         else:
             e = self._empty_count()
             W = self._phase_weights(e, enabled)
-        
 
         return sum(W[name] * h_vals[name] for name in enabled)
 
