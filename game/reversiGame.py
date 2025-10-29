@@ -133,7 +133,6 @@ class ReversiGame:
             self.player2 = MinimaxPlayer(max_time=1)  # Red player defaults to AI
 
         while True:
-            print()
             # Main menu options
             options = ["Jugar", "Seleccionar Jugadores", "Salir"]
             # Display menu with current player information
@@ -243,6 +242,8 @@ class ReversiGame:
             # Get move from current player (human or AI)
             x, y = self.current_turn.play(self.board)
             if x == None:  # Player requested to exit
+                print("Presiona ESC para salir")
+                Control.select({"ESC": None})
                 return
 
             # Execute the move and update game state
