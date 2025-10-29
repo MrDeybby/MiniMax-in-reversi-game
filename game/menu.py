@@ -44,7 +44,7 @@ class Menu:
             # variable.
             for i in range(len(self.menu_sections)):
                 if i == position:
-                    print(f'> {Color.RED}{self.menu_sections[i]}{Color.RESET} <')
+                    print(f'> {Color.BLUE}{self.menu_sections[i]}{Color.RESET} <')
                 else:   
                     print(self.menu_sections[i])
             

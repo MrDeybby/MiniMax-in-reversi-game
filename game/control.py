@@ -1,6 +1,7 @@
 import keyboard
 import time
-
+import msvcrt as kb
+import os
 # The `Control` class in Python provides a static method `select` that allows for selecting an item
 # based on key inputs from a dictionary of selections.
 class Control:
@@ -32,6 +33,16 @@ class Control:
             if key in buttons:
                 return selections[key]
 
+    @staticmethod
+    def clean_input_keys():
+        """
+        Clears all pressed keys.
+        Used when you want to input.
+        """
+        
+        # while a keypress is waiting to be read continue input, after clear the terminal
+        while kb.kbhit(): input()
+        os.system("cls")
 
 if __name__ == '__main__':
    if Control.select({'W':'UP', 'S':'DOWN', 'A':'LEFT', 'ESC':'SALIR'}) == 'SALIR':

@@ -12,7 +12,8 @@ from players.randomPlayer import RandomPlayer
 from players.minimax import MinimaxPlayer
 from game.control import Control
 from game.tokens import StackToken
-from multiprocessing import Lock
+import ast
+
 
 
 class ReversiGame:
@@ -35,13 +36,38 @@ class ReversiGame:
 
         choice = menu.select()
         players = {
-            0: HumanPlayer(),
-            1: MinimaxPlayer(max_time=1),
+            1: MinimaxPlayer(),
             2: GreedyPlayer(),
             3: RandomPlayer(),
             4: BadPlayer(max_time=1),
             5: player,
         }
+        
+        if choice == 1:
+            options = ["Heuristica Personalizada", "Base"]
+            menu = Menu(options, "Minimax")
+            choice = menu.select()
+            
+            if choice == 0:
+                Control.clean_input_keys()
+                try:
+                    heuristic_value = input("Inserte el diccionario con las heuristicas: ")
+                    heuristic = ast.literal_eval(heuristic_value)
+                    
+                    name = input("Nombre del Minimax: ")
+                    player = MinimaxPlayer(name=name, max_time=1, custom_weights=heuristic)
+                    Control.clean_input_keys()
+                    print("Heuristica cargada")
+                    
+                    return player
+                except:
+                    print("El diccionario debe ser valido")
+        
+        elif choice == 0:
+            Control.clean_input_keys()
+            name = input("Nombre: ")
+            return HumanPlayer(name=name)     
+         
         return players[choice]
 
     def app(self):
@@ -53,10 +79,12 @@ class ReversiGame:
             self.player1, self.player2 = HumanPlayer(), MinimaxPlayer(max_time=1)
 
         while True:
+            print()
             options = ["Jugar", "Seleccionar Jugadores", "Salir"]
-            menu = Menu(options, "Reversi Game")
+            menu = Menu(options, f"Jugador 1: {self.player1.name}, Jugador 2: {self.player2.name} ===\n=== Reversi Game")
             choice = menu.select()
             if options[choice] == "Salir":
+                Control.clean_input_keys()
                 print("Saliendo del juego...")
                 return
             elif options[choice] == "Seleccionar Jugadores":
@@ -74,13 +102,12 @@ class ReversiGame:
                 print("Presiona Enter para continuar")
                 Control.select({"ENTER": None})
                 continue
-
+            
+            Control.clean_input_keys()
             self.player1.tokens = StackToken("B")
             self.player2.tokens = StackToken("R")
             board = ReversiBoard()
             self.play(board=board)
-            print("Presiona Enter para salir")
-            Control.select({"ENTER": None})
 
     def swap_turn(self):
 
@@ -125,8 +152,7 @@ class ReversiGame:
                 return
             self.board.insert_play(x, y, self.current_turn.tokens.pop())
             os.system("cls")
-            # print(f"\n{self.current_turn.name} juega en ({x}, {y})")
-            print(f"\nAI juega en ({x}, {y})")
+            print(f"\n{self.current_turn.name} juega en ({x}, {y})")
             self.swap_turn()
 
         print(
@@ -154,7 +180,8 @@ class ReversiGame:
             )
         else:
             print("Juego empate")
-
+        print("Presiona ESC para salir")
+        Control.select({"ESC": None})
         for player, opponent in (
             (self.player1, self.player2),
             (self.player2, self.player1),
