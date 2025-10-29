@@ -53,8 +53,7 @@ class ReversiGame:
         self.player1 = player1 if player1 else self.player1
         self.player2 = player2 if player2 else self.player2
 
-    @staticmethod
-    def select_player(cls, player):
+    def select_player(self, player):
         """Interactive menu for selecting and configuring a player.
 
         Provides options to create:
@@ -164,8 +163,8 @@ class ReversiGame:
                     self.player2 = self.select_player(self.player2)
 
                 # Wait for user acknowledgment
-                print("Presiona Enter para continuar")
-                Control.select({"ENTER": None})
+                print("Presiona ESC para continuar")
+                Control.select({"ESC": None})
                 continue
 
             # Initialize new game
@@ -242,6 +241,11 @@ class ReversiGame:
             # Get move from current player (human or AI)
             x, y = self.current_turn.play(self.board)
             if x == None:  # Player requested to exit
+                for player in (self.player1, self.player2):
+                    try:
+                        player.reset()
+                    except:
+                        pass
                 print("Presiona ESC para salir")
                 Control.select({"ESC": None})
                 return
